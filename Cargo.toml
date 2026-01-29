@@ -10,7 +10,7 @@ fastrand = "2.1.0"
 roaring = "0.10.7"
 decurse = "0.0.4"
 clap = { version = "4.5.0", features = ["derive"] }
-zip = { version = "2.1.2", default-features = false, features = ["deflate"] }
+zip = { version = "7.0.0", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 regex = "1.10.5"

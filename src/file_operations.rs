@@ -72,16 +72,11 @@ pub fn write_states(path: &str, states: &roaring::RoaringTreemap) {
         .unwrap_or_else(|_| panic!("Unable to create file : {}", path));
 
     // Create an empty ZIP file.
-    zip::ZipWriter::new(&file)
-        .finish()
-        .unwrap_or_else(|_| panic!("Unable to create an empty ZIP file : {}", path));
+    let mut zip_writer = zip::ZipWriter::new(&file);
 
-    let add_chunk = |chunk_buffer: &[u8], chunk_id: u64| {
-        let mut zip_appender = zip::ZipWriter::new_append(&file)
-            .unwrap_or_else(|_| panic!("Unable to parse ZIP file (in append mode) : {}", path));
-
+    let mut add_chunk = |chunk_buffer: &[u8], chunk_id: u64| {
         // Add a chunk (new file) to the ZIP file.
-        zip_appender
+        zip_writer
             .start_file(
                 format!("chunk{chunk_id}"),
                 zip::write::SimpleFileOptions::default(),
@@ -91,17 +86,9 @@ pub fn write_states(path: &str, states: &roaring::RoaringTreemap) {
             });
 
         // Add chunk contents.
-        zip_appender
+        zip_writer
             .write_all(chunk_buffer)
             .unwrap_or_else(|_| panic!("Unable to add chunk {} to ZIP file : {}", chunk_id, path));
-
-        // Write changes to ZIP file.
-        zip_appender.finish().unwrap_or_else(|_| {
-            panic!(
-                "Unable to finalize writing chunk {} in ZIP file : {}",
-                chunk_id, path
-            )
-        });
     };
 
     let mut chunk_buffer: Vec<u8> = Vec::with_capacity(CHUNK_SIZE_BYTES);
@@ -130,6 +117,11 @@ pub fn write_states(path: &str, states: &roaring::RoaringTreemap) {
     if !chunk_buffer.is_empty() {
         add_chunk(&chunk_buffer, chunk_id);
     }
+
+    // Finalize ZIP file.
+    zip_writer
+        .finish()
+        .unwrap_or_else(|_| panic!("Unable to finalize ZIP file : {}", path));
 }
 
 /// Terminate thread if `path` is an existing path in the file system
@@ -278,6 +270,33 @@ pub mod tests {
             assert!(!read_state_value("states", 1));
             assert!(!read_state_value("states", u64::MAX - 1));
             assert!(read_state_value("states", u64::MAX));
+        });
+    }
+
+    #[test]
+    fn zip_compression_ratio() {
+        let mut states = roaring::RoaringTreemap::new();
+
+        for chunk_id in 0..314 {
+            for _i in 0..9 {
+                states.insert(chunk_id * CHUNK_SIZE_BITS + fastrand::u64(0..CHUNK_SIZE_BITS));
+            }
+
+            states.insert((chunk_id + 1) * CHUNK_SIZE_BITS - 1);
+        }
+
+        run_in_tempdir(|| {
+            write_states("states", &states);
+
+            let file = File::open("states").unwrap();
+            let file_len = file.metadata().unwrap().len();
+
+            assert!(file_len * 800 < (314 * CHUNK_SIZE_BYTES) as u64);
+            assert!(file_len * 1032 > (314 * CHUNK_SIZE_BYTES) as u64);
+
+            let zip = zip::ZipArchive::new(file).unwrap();
+
+            assert_eq!(zip.len(), 314);
         });
     }
 

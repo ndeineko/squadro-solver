@@ -147,7 +147,7 @@ impl BoardState {
     /// position or the opposite side.
     /// Return `true` if such a collision occurred.
     fn fix_possible_collision(&mut self, player: usize, piece: usize, position: usize) -> bool {
-        if position % 6 == 0 {
+        if position.is_multiple_of(6) {
             // A collision is impossible when a piece reaches the opposite side
             // or its final position.
             return false;
@@ -165,7 +165,7 @@ impl BoardState {
         // Get position of the other player's piece.
         let other_position = self.get_piece_position(other_player, other_piece);
 
-        if other_position % 6 == 0 {
+        if other_position.is_multiple_of(6) {
             // A collision is impossible when the other piece is in its initial
             // or final position or on the opposite side.
             return false;

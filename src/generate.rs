@@ -249,6 +249,7 @@ fn treemap_next_value(treemap: &RoaringTreemap, from: u64) -> Option<u64> {
 #[cfg(test)]
 mod tests {
     use std::fs::File;
+    use std::slice;
 
     use super::*;
 
@@ -258,7 +259,7 @@ mod tests {
 
         let get_generate_result = || {
             std::panic::catch_unwind(|| {
-                generate(&[init_state.clone()]);
+                generate(slice::from_ref(&init_state));
             })
         };
 
@@ -341,7 +342,7 @@ mod tests {
 
         let get_generate_result = || {
             std::panic::catch_unwind(|| {
-                generate(&[init_state.clone()]);
+                generate(slice::from_ref(&init_state));
             })
         };
 
@@ -446,7 +447,7 @@ mod tests {
     fn simple_endgame_exploration() {
         let init_state = BoardState::from(100382226046);
 
-        let seen_states = collect_reachable_states(&[init_state.clone()]);
+        let seen_states = collect_reachable_states(slice::from_ref(&init_state));
 
         let mut remaining_states = seen_states.clone();
         let mut winning_states = collect_winning_states(&mut remaining_states);
@@ -476,7 +477,7 @@ mod tests {
         let mut previous_seen_states_len = 0;
 
         for player in 0..=1 {
-            let seen_states = collect_reachable_states(&[init_state.clone()]);
+            let seen_states = collect_reachable_states(slice::from_ref(&init_state));
 
             let mut remaining_states = seen_states.clone();
             let mut winning_states = collect_winning_states(&mut remaining_states);
@@ -515,7 +516,7 @@ mod tests {
         let mut winning_states_vec: Vec<RoaringTreemap> = Vec::new();
 
         for player in 0..=1 {
-            let seen_states = collect_reachable_states(&[init_state.clone()]);
+            let seen_states = collect_reachable_states(slice::from_ref(&init_state));
 
             let mut remaining_states = seen_states.clone();
             let mut winning_states = collect_winning_states(&mut remaining_states);

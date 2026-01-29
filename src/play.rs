@@ -170,6 +170,8 @@ fn abort_if_id_is_invalid(id: u64) {
 
 #[cfg(test)]
 mod tests {
+    use std::slice;
+
     use crate::generate::generate;
 
     use super::*;
@@ -189,7 +191,7 @@ mod tests {
                 assert!(get_play_result(id, None).is_err());
             }
 
-            generate(&[init_state.clone()]);
+            generate(slice::from_ref(&init_state));
 
             for id in err_id {
                 assert!(get_play_result(id, None).is_err());
@@ -206,7 +208,7 @@ mod tests {
         let init_state = BoardState::from(85065666045);
 
         file_operations::tests::run_in_tempdir(|| {
-            generate(&[init_state.clone()]);
+            generate(slice::from_ref(&init_state));
 
             for _i in 0..25 {
                 let first_moved_piece = vec![0, 1, 4][fastrand::usize(0..3)];
@@ -245,7 +247,7 @@ mod tests {
         let init_state = BoardState::from(init_id);
 
         file_operations::tests::run_in_tempdir(|| {
-            generate(&[init_state.clone()]);
+            generate(slice::from_ref(&init_state));
 
             for human_player in (0..=1).rev() {
                 let (send, recv) = mpsc::channel();
@@ -344,12 +346,12 @@ mod tests {
 
     #[test]
     fn human_input() {
-        let check_result = |id, input, expected_id: Option<u64>| {
+        let check_result = |id, input, expected_id_opt: Option<u64>| {
             let (state_opt, eval_opt) = get_next_state_from_user_input(BoardState::from(id), input);
-            assert_eq!(state_opt.is_none(), expected_id.is_none());
+            assert_eq!(state_opt.is_none(), expected_id_opt.is_none());
             assert_eq!(eval_opt, None);
-            if expected_id.is_some() {
-                assert_eq!(state_opt.unwrap().get_id(), expected_id.unwrap());
+            if let Some(expected_id) = expected_id_opt {
+                assert_eq!(state_opt.unwrap().get_id(), expected_id);
             }
         };
 
@@ -439,7 +441,7 @@ mod tests {
                 assert!(get_abort_result(id).is_err());
             }
 
-            generate(&[init_state.clone()]);
+            generate(slice::from_ref(&init_state));
 
             for id in err_id {
                 error_contains_id(id);

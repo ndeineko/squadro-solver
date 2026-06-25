@@ -69,7 +69,7 @@ Generating the data files requires about **21 GiB** of **free RAM** and 3.2 GiB 
   <summary>
     <i>Note : with memory compression enabled, the required RAM can be reduced to about 11 GiB, for example by using the zram Linux kernel module as shown here.</i>
   </summary>
-  The following commands will create a 22 GiB compressed block device in RAM and use it as swap space. Thanks to memory compression, the data files can be successfully generated on a virtual machine running Ubuntu Server 24.04 LTS with 11 GiB of RAM. However, due to the additional time involved in (de)compression operations, it is recommended not to generate the data files with less RAM.
+  The following commands will create a 22 GiB compressed block device in RAM and use it as swap space. Thanks to memory compression, the data files can be successfully generated on a virtual machine running Ubuntu Server 26.04 LTS with 11 GiB of RAM. However, due to the additional time involved in (de)compression operations, it is recommended not to generate the data files with less RAM.
 
   ```sh
   sudo modprobe zram # enable zram module
@@ -90,21 +90,23 @@ cargo run --release -- generate
 
 It should complete in 1 to 3 days depending on the system's specifications. Here is the expected output :
 
-    Generating states. This will take a while.
-    46199129613 explored states saved.
-    Iteration 1 ... Found 19256393173 new winning states for player 0 and 21022870073 for player 1.
-    Iteration 2 ... Found 1354248508 new winning states for player 0 and 1689128553 for player 1.
-    Iteration 3 ... Found 597720122 new winning states for player 0 and 808920679 for player 1.
-    Iteration 4 ... Found 281683757 new winning states for player 0 and 441249020 for player 1.
-    Iteration 5 ... Found 116280713 new winning states for player 0 and 285252465 for player 1.
-    Iteration 6 ... Found 53887124 new winning states for player 0 and 165225623 for player 1.
-    Iteration 7 ... Found 18430182 new winning states for player 0 and 66786892 for player 1.
-    Iteration 8 ... Found 2695242 new winning states for player 0 and 13193146 for player 1.
-    Iteration 9 ... Found 73360 new winning states for player 0 and 218020 for player 1.
-    Iteration 10 ... Found 0 new winning states for player 0 and 142 for player 1.
-    Iteration 11 ... Found 0 new winning states for player 0 and 0 for player 1.
-    21681412181 winning states saved for player 0.
-    24492844613 winning states saved for player 1.
+```
+Generating states. This will take a while.
+46199129613 explored states saved.
+Iteration 1 ... Found 19256393173 new winning states for player 0 and 21022870073 for player 1.
+Iteration 2 ... Found 1354248508 new winning states for player 0 and 1689128553 for player 1.
+Iteration 3 ... Found 597720122 new winning states for player 0 and 808920679 for player 1.
+Iteration 4 ... Found 281683757 new winning states for player 0 and 441249020 for player 1.
+Iteration 5 ... Found 116280713 new winning states for player 0 and 285252465 for player 1.
+Iteration 6 ... Found 53887124 new winning states for player 0 and 165225623 for player 1.
+Iteration 7 ... Found 18430182 new winning states for player 0 and 66786892 for player 1.
+Iteration 8 ... Found 2695242 new winning states for player 0 and 13193146 for player 1.
+Iteration 9 ... Found 73360 new winning states for player 0 and 218020 for player 1.
+Iteration 10 ... Found 0 new winning states for player 0 and 142 for player 1.
+Iteration 11 ... Found 0 new winning states for player 0 and 0 for player 1.
+21681412181 winning states saved for player 0.
+24492844613 winning states saved for player 1.
+```
 
 ### Step 2 : play against the computer
 
@@ -121,18 +123,19 @@ cargo run --release -- play
 By default, the computer plays against itself from the starting position. To change this behavior, additional arguments can be appended to that command. Some examples are provided below.
 
 - Specify the human-controlled player (*top* or *left*) :
-    
-    ```
-    cargo run --release -- play --player top
-    ```
-    ```
-    cargo run --release -- play --player left
-    ```
+
+  ```
+  cargo run --release -- play --player top
+  ```
+  ```
+  cargo run --release -- play --player left
+  ```
+
 - Start from a specific position ([the next section](#conversion-between-game-state-and-id) provides instructions for obtaining the ID) :
 
-    ```
-    cargo run --release -- play --id 12345
-    ```
+  ```
+  cargo run --release -- play --id 12345
+  ```
 
 All arguments and their description can be printed with :
 

@@ -15,19 +15,19 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: cargo fmt --check
 
   clippy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: cargo clippy --all-targets -- --deny warnings
 
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: cargo build --release --verbose
 
   test:
@@ -56,7 +56,7 @@ jobs:
             os: macos-latest
             target: aarch64-apple-darwin
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: rustup target add ${{ matrix.target }}
     - run: sudo apt update -y && sudo apt install gcc-multilib -y
       if: startsWith(matrix.os, 'ubuntu')

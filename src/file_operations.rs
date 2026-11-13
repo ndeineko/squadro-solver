@@ -219,7 +219,7 @@ pub mod tests {
             let mut zip = zip::ZipArchive::new(File::open("states").unwrap()).unwrap();
             for i in 0..zip.len() {
                 let mut file = zip.by_index(i).unwrap();
-                let file_name = file.name();
+                let file_name = &file.name().unwrap();
                 if name_regex.is_match(file_name) {
                     let chunk_id = (file_name[5..]).parse::<u64>().unwrap();
                     let mut chunk_data = Vec::new();
